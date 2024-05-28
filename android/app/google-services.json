@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "358149224953",
+    "project_id": "plogging-32dfa",
+    "storage_bucket": "plogging-32dfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358149224953:android:1f02901a3601e09056a528",
+        "android_client_info": {
+          "package_name": "com.example.everyplogging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVYB5F748PI3CiGklgm81Jntm-oH0EJK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
