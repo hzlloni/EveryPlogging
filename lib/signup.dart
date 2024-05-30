@@ -24,8 +24,10 @@ class _SignupState extends State<Signup> {
 
   bool _isCheckingDuplicate = false;
   bool _isDuplicate = false;
+  bool _isRegistering = false;
   String _duplicateCheckMessage = '';
   String _passwordErrorMessage = '';
+  String _fieldErrorMessage = '';
 
   void _checkDuplicateEmail() async {
     setState(() {
@@ -67,6 +69,22 @@ class _SignupState extends State<Signup> {
       return;
     }
 
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty ||
+        _schoolController.text.isEmpty ||
+        _birthController.text.isEmpty) {
+      setState(() {
+        _fieldErrorMessage = '모든 정보를 입력해 주세요.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isRegistering = true;
+    });
+
     try {
       await _firestore.collection('users').add({
         'name': _nameController.text,
@@ -81,6 +99,10 @@ class _SignupState extends State<Signup> {
       );
     } catch (e) {
       print('Error saving user data: $e');
+    } finally {
+      setState(() {
+        _isRegistering = false;
+      });
     }
   }
 
@@ -226,17 +248,20 @@ class _SignupState extends State<Signup> {
                       ),
                     ],
                   ),
+                  if (_fieldErrorMessage.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _fieldErrorMessage,
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
-                        );
-                      },
+                      onPressed: _isRegistering ? null : _saveUserData,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF7CC0FF), // 버튼 배경색 변경
                         foregroundColor: Colors.white, // 텍스트 색상 변경
@@ -246,7 +271,9 @@ class _SignupState extends State<Signup> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 15), // 버튼 높이 조정
                       ),
-                      child: const Text('로그인 하러 가기'),
+                      child: _isRegistering
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('회원가입 하기'),
                     ),
                   ),
                 ],

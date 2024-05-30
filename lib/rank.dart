@@ -1,4 +1,5 @@
 import 'package:everyplogging/widget/bottombar.dart';
+import 'package:everyplogging/widget/mainappbar.dart';
 import 'package:flutter/material.dart';
 
 class Rank extends StatefulWidget {
@@ -9,14 +10,10 @@ class Rank extends StatefulWidget {
 }
 
 class _RankState extends State<Rank> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Rank Page'),
-      ),
+      appBar: MainAppBar(),
       bottomNavigationBar: BottomNavi(
         selectedIndex: 2,
         onItemTapped: (index) {

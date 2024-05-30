@@ -1,3 +1,4 @@
+import 'package:everyplogging/profile.dart';
 import 'package:flutter/material.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -39,7 +40,12 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Colors.white,
                 size: 45, // 아이콘 크기 조정
               ), // 하얀색 프로필 아이콘
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Profile()),
+                );
+              },
             ),
           ],
         ),

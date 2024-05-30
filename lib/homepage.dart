@@ -11,14 +11,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Page'),
-      ),
+      appBar: MainAppBar(),
       bottomNavigationBar: BottomNavi(
         selectedIndex: 1,
         onItemTapped: (index) {

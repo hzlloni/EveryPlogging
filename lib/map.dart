@@ -1,4 +1,5 @@
 import 'package:everyplogging/widget/bottombar.dart';
+import 'package:everyplogging/widget/mainappbar.dart';
 import 'package:flutter/material.dart';
 
 class Map extends StatefulWidget {
@@ -9,14 +10,10 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Map Page'),
-      ),
+      appBar: MainAppBar(),
       bottomNavigationBar: BottomNavi(
         selectedIndex: 0,
         onItemTapped: (index) {
