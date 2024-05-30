@@ -20,6 +20,10 @@ dependencies:
   provider: ^6.1.2
   firebase_ui_auth: ^1.14.0
   font_awesome_flutter: ^10.7.0
+  google_maps_flutter: ^2.6.1
+  google_maps_flutter_web: ^0.5.7
+  geolocator: ^8.0.0
+  permission_handler: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +42,17 @@ flutter:
      - assets/logo.png
      - assets/signup.png
      - assets/appbarlogo.png
+     - assets/trash1.png
+     - assets/trash2.png
+     - assets/trash3.png
+     - assets/trash4.png
+     - assets/trash5.png
+     - assets/trash6.png
+     - assets/whatIs.png
+     - assets/Splash.jpg
+     - assets/pickUpTrash.png
+     - assets/jogging.png
+
 
   # example:
   # fonts:
