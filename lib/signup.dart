@@ -230,7 +230,13 @@ class _SignupState extends State<Signup> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _saveUserData,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Login()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF7CC0FF), // 버튼 배경색 변경
                         foregroundColor: Colors.white, // 텍스트 색상 변경
@@ -240,30 +246,7 @@ class _SignupState extends State<Signup> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 15), // 버튼 높이 조정
                       ),
-                      child: const Text('회원가입 하기'),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, // 버튼 색상 변경
-                        foregroundColor: Colors.black, // 텍스트 색상 변경
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3), // 네모난 모서리
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15), // 버튼 높이 조정
-                      ),
-                      child: const Text('로그인 페이지로 가기'),
+                      child: const Text('로그인 하러 가기'),
                     ),
                   ),
                 ],

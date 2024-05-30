@@ -20,13 +20,13 @@ class _LoginState extends State<Login> {
     String password = _passwordController.text;
 
     // Debugging logs to check the input values
-    print('ID: $email');
+    print('Email: $email');
     print('Password: $password');
 
     try {
       QuerySnapshot snapshot = await _firestore
           .collection('users')
-          .where('id', isEqualTo: email)
+          .where('email', isEqualTo: email)
           .where('password', isEqualTo: password)
           .get();
 
