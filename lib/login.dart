@@ -11,22 +11,22 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void _login() async {
-    String id = _idController.text;
+    String email = _emailController.text;
     String password = _passwordController.text;
 
     // Debugging logs to check the input values
-    print('ID: $id');
+    print('ID: $email');
     print('Password: $password');
 
     try {
       QuerySnapshot snapshot = await _firestore
           .collection('users')
-          .where('id', isEqualTo: id)
+          .where('id', isEqualTo: email)
           .where('password', isEqualTo: password)
           .get();
 
@@ -81,7 +81,7 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: [
                   TextField(
-                    controller: _idController,
+                    controller: _emailController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: '아이디',
