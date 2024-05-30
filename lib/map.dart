@@ -1,26 +1,24 @@
 import 'package:everyplogging/widget/bottombar.dart';
-import 'package:everyplogging/widget/mainappbar.dart';
 import 'package:flutter/material.dart';
 
-// HomePage 클래스 정의
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class Map extends StatefulWidget {
+  const Map({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<Map> createState() => _MapState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MapState extends State<Map> {
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: Text('Map Page'),
       ),
       bottomNavigationBar: BottomNavi(
-        selectedIndex: 1,
+        selectedIndex: 0,
         onItemTapped: (index) {
           print('Selected Index: $index');
         },
