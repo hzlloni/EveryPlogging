@@ -15,6 +15,8 @@ class _SignupState extends State<Signup> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
 
@@ -23,6 +25,7 @@ class _SignupState extends State<Signup> {
   bool _isCheckingDuplicate = false;
   bool _isDuplicate = false;
   String _duplicateCheckMessage = '';
+  String _passwordErrorMessage = '';
 
   void _checkDuplicateEmail() async {
     setState(() {
@@ -39,7 +42,7 @@ class _SignupState extends State<Signup> {
         _isDuplicate = snapshot.docs.isNotEmpty;
         _isCheckingDuplicate = false;
         _duplicateCheckMessage =
-            _isDuplicate ? '사용 불가능한 아이디입니다.' : '사용 가능한 아이디입니다.';
+            _isDuplicate ? '중복된 아이디입니다.' : '사용 가능한 아이디입니다.';
       });
     } catch (e) {
       print('Error checking duplicate: $e');
@@ -52,7 +55,14 @@ class _SignupState extends State<Signup> {
   void _saveUserData() async {
     if (_isDuplicate) {
       setState(() {
-        _duplicateCheckMessage = '사용 불가능한 아이디입니다. 다른 아이디를 사용하세요.';
+        _duplicateCheckMessage = '중복된 아이디입니다. 다른 아이디를 사용하세요.';
+      });
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _passwordErrorMessage = '비밀번호가 일치하지 않습니다.';
       });
       return;
     }
@@ -88,7 +98,7 @@ class _SignupState extends State<Signup> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 20.0),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: Column(
                 children: [
                   TextField(
@@ -170,6 +180,24 @@ class _SignupState extends State<Signup> {
                       labelText: '비밀번호',
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '비밀번호 확인',
+                    ),
+                  ),
+                  if (_passwordErrorMessage.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _passwordErrorMessage,
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   Row(
                     children: [

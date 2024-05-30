@@ -1,6 +1,8 @@
 import 'package:everyplogging/widget/bottombar.dart';
+import 'package:everyplogging/widget/mainappbar.dart';
 import 'package:flutter/material.dart';
 
+// HomePage 클래스 정의
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

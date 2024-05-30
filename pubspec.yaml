@@ -37,6 +37,7 @@ flutter:
      - assets/login.png
      - assets/logo.png
      - assets/signup.png
+     - assets/appbarlogo.png
 
   # example:
   # fonts:
