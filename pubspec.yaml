@@ -24,6 +24,9 @@ dependencies:
   google_maps_flutter_web: ^0.5.7
   geolocator: ^8.0.0
   permission_handler: ^8.0.0
+  location: ^6.0.2
+  carousel_slider: ^4.0.0
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +55,8 @@ flutter:
      - assets/Splash.jpg
      - assets/pickUpTrash.png
      - assets/jogging.png
+     - assets/banner.png
+     - assets/placeholder.png
 
 
   # example:

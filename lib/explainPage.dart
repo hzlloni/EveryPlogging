@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:everyplogging/login.dart';
 import 'package:flutter/material.dart';
 
 class ExplainPage extends StatefulWidget {
@@ -83,6 +84,10 @@ class _ExplainPageState extends State<ExplainPage> {
     setState(() {
       _showCheckboxes = true;
     });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Login()),
+    );
   }
 
   @override
