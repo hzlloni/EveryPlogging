@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
 import 'splash.dart';
+
+String? currentUserId;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  // Firebase 익명 로그인
-  await FirebaseAuth.instance.signInAnonymously();
 
   runApp(const MyApp());
 }

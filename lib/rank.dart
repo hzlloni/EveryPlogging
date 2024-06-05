@@ -10,8 +10,6 @@ class Rank extends StatefulWidget {
 }
 
 class _RankState extends State<Rank> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

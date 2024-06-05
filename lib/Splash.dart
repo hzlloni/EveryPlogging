@@ -103,7 +103,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 child: Image.asset(
                   'assets/pickUpTrash.png', // pickUpTrash.png 이미지 경로
                   width: screenWidth * 0.3, // 화면 너비의 30%
-                  height: screenHeight * 0.18, // 화면 높이의 20%
+                  height: screenHeight * 0.18, // 화면 높이의 18%
                 ),
               );
             },

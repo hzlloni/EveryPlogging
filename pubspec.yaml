@@ -57,6 +57,7 @@ flutter:
      - assets/jogging.png
      - assets/banner.png
      - assets/placeholder.png
+     - assets/marker.png
 
 
   # example:

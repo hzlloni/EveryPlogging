@@ -1,4 +1,3 @@
-import 'package:everyplogging/homepage.dart';
 import 'package:everyplogging/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,10 +12,9 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(); // 실제로는 ID로 사용
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
 
@@ -24,8 +22,10 @@ class _SignupState extends State<Signup> {
 
   bool _isCheckingDuplicate = false;
   bool _isDuplicate = false;
+  bool _isRegistering = false;
   String _duplicateCheckMessage = '';
   String _passwordErrorMessage = '';
+  String _fieldErrorMessage = '';
 
   void _checkDuplicateEmail() async {
     setState(() {
@@ -41,8 +41,7 @@ class _SignupState extends State<Signup> {
       setState(() {
         _isDuplicate = snapshot.docs.isNotEmpty;
         _isCheckingDuplicate = false;
-        _duplicateCheckMessage =
-            _isDuplicate ? '중복된 아이디입니다.' : '사용 가능한 아이디입니다.';
+        _duplicateCheckMessage = _isDuplicate ? '중복된 아이디입니다.' : '사용 가능한 아이디입니다.';
       });
     } catch (e) {
       print('Error checking duplicate: $e');
@@ -67,20 +66,43 @@ class _SignupState extends State<Signup> {
       return;
     }
 
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty ||
+        _schoolController.text.isEmpty ||
+        _birthController.text.isEmpty) {
+      setState(() {
+        _fieldErrorMessage = '모든 정보를 입력해 주세요.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isRegistering = true;
+    });
+
     try {
-      await _firestore.collection('users').add({
+      // Firestore에 사용자 데이터 저장
+      await _firestore.collection('users').doc(_emailController.text).set({
         'name': _nameController.text,
         'birthdate': _birthController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
         'school': _schoolController.text,
       });
-      Navigator.push(
+
+      // 회원가입 후 로그인 페이지로 이동
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const Login()),
       );
     } catch (e) {
       print('Error saving user data: $e');
+    } finally {
+      setState(() {
+        _isRegistering = false;
+      });
     }
   }
 
@@ -97,8 +119,7 @@ class _SignupState extends State<Signup> {
               height: 290, // 적절한 높이로 조정
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: Column(
                 children: [
                   TextField(
@@ -126,8 +147,7 @@ class _SignupState extends State<Signup> {
                       );
                       if (pickedDate != null) {
                         setState(() {
-                          _birthController.text =
-                              DateFormat('yyyy-MM-dd').format(pickedDate);
+                          _birthController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
                         });
                       }
                     },
@@ -147,8 +167,7 @@ class _SignupState extends State<Signup> {
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed:
-                            _isCheckingDuplicate ? null : _checkDuplicateEmail,
+                        onPressed: _isCheckingDuplicate ? null : _checkDuplicateEmail,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey[200], // 버튼 색상 변경
                           foregroundColor: Colors.black, // 텍스트 색상 변경
@@ -226,27 +245,31 @@ class _SignupState extends State<Signup> {
                       ),
                     ],
                   ),
+                  if (_fieldErrorMessage.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _fieldErrorMessage,
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
-                        );
-                      },
+                      onPressed: _isRegistering ? null : _saveUserData,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF7CC0FF), // 버튼 배경색 변경
                         foregroundColor: Colors.white, // 텍스트 색상 변경
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(0), // 네모난 모서리
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15), // 버튼 높이 조정
+                        padding: const EdgeInsets.symmetric(vertical: 15), // 버튼 높이 조정
                       ),
-                      child: const Text('로그인 하러 가기'),
+                      child: _isRegistering
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('회원가입 하기'),
                     ),
                   ),
                 ],
