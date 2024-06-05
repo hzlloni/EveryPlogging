@@ -38,14 +38,12 @@ class _MapState extends State<Map> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // 위치 서비스 활성화 확인
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       print('Location services are disabled.');
       return;
     }
 
-    // 위치 권한 요청
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -60,7 +58,6 @@ class _MapState extends State<Map> {
       return;
     }
 
-    // 위치 가져오기
     _determinePosition();
   }
 
@@ -69,7 +66,6 @@ class _MapState extends State<Map> {
       var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
-        // 지도의 카메라 위치를 현재 위치로 이동
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
@@ -132,10 +128,9 @@ class _MapState extends State<Map> {
   Future<BitmapDescriptor> _createCustomMarkerWithImage(String text) async {
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    const double markerWidth = 170.0; // Increase marker width
-    const double markerHeight = 170.0; // Increase marker height
+    const double markerWidth = 170.0; 
+    const double markerHeight = 170.0; 
 
-    // Load the image
     final ByteData data = await rootBundle.load('assets/marker.png');
     final ui.Codec codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(),
@@ -144,10 +139,8 @@ class _MapState extends State<Map> {
     );
     final ui.FrameInfo fi = await codec.getNextFrame();
 
-    // Draw the image
     canvas.drawImage(fi.image, Offset(0.0, 0.0), Paint());
 
-    // Draw text on top of the image
     TextPainter painter = TextPainter(
       textDirection: ui.TextDirection.ltr,
     );

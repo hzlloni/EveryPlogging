@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashPage(), // 처음에 SplashPage를 띄웁니다.
+      home: SplashPage(), 
     );
   }
 }

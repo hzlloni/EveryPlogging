@@ -21,7 +21,6 @@ class _LoginState extends State<Login> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    // Debugging logs to check the input values
     print('Email: $email');
     print('Password: $password');
 
@@ -33,7 +32,7 @@ class _LoginState extends State<Login> {
         String storedPassword = userDoc['password'];
         if (password == storedPassword) {
           setState(() {
-            currentUserId = email; // 로그인 성공 시 전역 변수에 사용자 ID 저장
+            currentUserId = email; 
           });
 
           Navigator.pushReplacement(
@@ -68,7 +67,7 @@ class _LoginState extends State<Login> {
               'assets/login.png',
               fit: BoxFit.cover,
               width: double.infinity,
-              height: 400, // 적절한 높이로 조정
+              height: 400, 
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 27.0),
@@ -77,10 +76,10 @@ class _LoginState extends State<Login> {
                   Image.asset(
                     'assets/logo.png',
                     fit: BoxFit.contain,
-                    width: 150, // 적절한 너비로 조정
+                    width: 150,
                     height: 100,
                   ),
-                  const SizedBox(width: 10), // 로고와 텍스트 간의 간격
+                  const SizedBox(width: 10), 
                 ],
               ),
             ),
@@ -112,12 +111,12 @@ class _LoginState extends State<Login> {
                     child: ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7CC0FF), // 버튼 배경색 변경
-                        foregroundColor: Colors.white, // 텍스트 색상 변경
+                        backgroundColor: const Color(0xFF7CC0FF), 
+                        foregroundColor: Colors.white, 
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3), // 네모난 모서리
+                          borderRadius: BorderRadius.circular(3), 
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15), // 버튼 높이 조정
+                        padding: const EdgeInsets.symmetric(vertical: 15), 
                       ),
                       child: const Text('로그인 하기'),
                     ),
@@ -133,12 +132,12 @@ class _LoginState extends State<Login> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, // 버튼 색상 변경
-                        foregroundColor: Colors.black, // 텍스트 색상 변경
+                        backgroundColor: Colors.white, 
+                        foregroundColor: Colors.black, 
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3), // 네모난 모서리
+                          borderRadius: BorderRadius.circular(3), 
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15), // 버튼 높이 조정
+                        padding: const EdgeInsets.symmetric(vertical: 15), 
                       ),
                       child: const Text('회원가입 하기'),
                     ),

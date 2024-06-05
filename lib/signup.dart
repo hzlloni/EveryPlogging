@@ -12,7 +12,7 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController(); // 실제로는 ID로 사용
+  final TextEditingController _emailController = TextEditingController(); 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _schoolController = TextEditingController();
@@ -83,7 +83,6 @@ class _SignupState extends State<Signup> {
     });
 
     try {
-      // Firestore에 사용자 데이터 저장
       await _firestore.collection('users').doc(_emailController.text).set({
         'name': _nameController.text,
         'birthdate': _birthController.text,
@@ -92,7 +91,6 @@ class _SignupState extends State<Signup> {
         'school': _schoolController.text,
       });
 
-      // 회원가입 후 로그인 페이지로 이동
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Login()),
@@ -116,7 +114,7 @@ class _SignupState extends State<Signup> {
               'assets/signup.png',
               fit: BoxFit.fill,
               width: double.infinity,
-              height: 290, // 적절한 높이로 조정
+              height: 290, 
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -162,17 +160,17 @@ class _SignupState extends State<Signup> {
                             border: OutlineInputBorder(),
                             labelText: '아이디',
                           ),
-                          keyboardType: TextInputType.emailAddress, // 키보드 타입 설정
+                          keyboardType: TextInputType.emailAddress, 
                         ),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: _isCheckingDuplicate ? null : _checkDuplicateEmail,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[200], // 버튼 색상 변경
-                          foregroundColor: Colors.black, // 텍스트 색상 변경
+                          backgroundColor: Colors.grey[200], 
+                          foregroundColor: Colors.black, 
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0), // 네모난 모서리
+                            borderRadius: BorderRadius.circular(0), 
                           ),
                         ),
                         child: _isCheckingDuplicate
@@ -232,13 +230,13 @@ class _SignupState extends State<Signup> {
                       const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {
-                          // 학교 인증 버튼 누를 때의 동작 추가
+
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[200], // 버튼 색상 변경
-                          foregroundColor: Colors.black, // 텍스트 색상 변경
+                          backgroundColor: Colors.grey[200], 
+                          foregroundColor: Colors.black, 
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0), // 네모난 모서리
+                            borderRadius: BorderRadius.circular(0), 
                           ),
                         ),
                         child: const Icon(Icons.camera_alt),
@@ -260,12 +258,12 @@ class _SignupState extends State<Signup> {
                     child: ElevatedButton(
                       onPressed: _isRegistering ? null : _saveUserData,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7CC0FF), // 버튼 배경색 변경
-                        foregroundColor: Colors.white, // 텍스트 색상 변경
+                        backgroundColor: const Color(0xFF7CC0FF), 
+                        foregroundColor: Colors.white, 
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0), // 네모난 모서리
+                          borderRadius: BorderRadius.circular(0), 
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15), // 버튼 높이 조정
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: _isRegistering
                           ? const CircularProgressIndicator(color: Colors.white)

@@ -7,8 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 
-import 'login.dart'; // 전역 변수를 가져오기 위해 import
-import 'homepage.dart'; // HomePage import
+import 'login.dart'; 
+import 'homepage.dart'; 
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -156,14 +156,14 @@ class _AddState extends State<AddPage> {
               'title': _titleController.text,
               'image_path': _image?.path ?? 'assets/placeholder.png',
               'created_at': Timestamp.now(),
-              'created_by': currentUserId, // 모임을 생성한 사용자 ID 추가
-              'total': int.tryParse(_totalController.text), // 인원수 추가
-              'date': _dateController.text, // 날짜 추가
-              'start_time': _startTimeController.text, // 시작 시간 추가
-              'end_time': _endTimeController.text, // 종료 시간 추가
-              'notice': _noticeController.text, // 주의사항 추가
+              'created_by': currentUserId, 
+              'total': int.tryParse(_totalController.text), 
+              'date': _dateController.text, 
+              'start_time': _startTimeController.text, 
+              'end_time': _endTimeController.text, 
+              'notice': _noticeController.text, 
               'location': GeoPoint(_selectedLocation!.latitude,
-                  _selectedLocation!.longitude), // 위치 추가
+                  _selectedLocation!.longitude), 
               'current' : 1,
             });
 
@@ -251,7 +251,7 @@ class _AddState extends State<AddPage> {
                 onTap: _pickImage,
                 child: _image == null
                     ? Image.asset(
-                        'assets/placeholder.png', // Place your placeholder image asset here
+                        'assets/placeholder.png', 
                         height: screenHeight * 0.1,
                         width: screenWidth,
                         fit: BoxFit.cover,
@@ -406,11 +406,11 @@ class _AddState extends State<AddPage> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0), // 텍스트 색상 흰색
+                          vertical: 10.0, horizontal: 20.0), 
                     ),
                     child: Text(
                       '모임 만들기',
-                      style: TextStyle(fontWeight: FontWeight.bold), // 텍스트 볼드체
+                      style: TextStyle(fontWeight: FontWeight.bold), 
                     ),
                   ),
                 ),

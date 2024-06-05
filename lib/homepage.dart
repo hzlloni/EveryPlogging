@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
           print('Selected Index: $index');
         },
       ),
-      backgroundColor: Color(0xFFCFEFFF), // 배경색 지정
+      backgroundColor: Color(0xFFCFEFFF), 
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -38,14 +38,12 @@ class _HomePageState extends State<HomePage> {
             ),
             items: imgList.map((item) {
               if (item is String && item.startsWith('http')) {
-                // 네트워크 이미지
                 return Container(
                   child: Center(
                     child: Image.network(item, fit: BoxFit.cover, width: 1000),
                   ),
                 );
               } else {
-                // 로컬 이미지
                 return Container(
                   child: Center(
                     child: Image.asset(item, fit: BoxFit.cover, width: 1000),
@@ -55,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             }).toList(),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 16.0), // 왼쪽에만 패딩 적용
+            padding: const EdgeInsets.only(left: 16.0),
             child: Text(
               '목록 보기',
               style: TextStyle(
@@ -64,11 +62,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          // 추가적인 위젯들
           Expanded(
             child: ListView(
               children: [
-                // 이곳에 다른 위젯들을 추가하세요
+             
               ],
             ),
           ),
@@ -81,10 +78,10 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => AddPage()),
           );
         },
-        backgroundColor: Color(0xFF7EC1DE), // 지정된 색상
+        backgroundColor: Color(0xFF7EC1DE), 
         child: Icon(
           Icons.add,
-          color: Colors.white, // 아이콘 색상
+          color: Colors.white, 
         ),
       ),
     );

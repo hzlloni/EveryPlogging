@@ -28,7 +28,6 @@ class _ExplainPageState extends State<ExplainPage> {
     'assets/trash6.png',
   ];
 
-  // 이미지의 위치는 initState에서 결정됩니다
   late List<Offset> _positionList;
 
   @override
@@ -37,7 +36,6 @@ class _ExplainPageState extends State<ExplainPage> {
     _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       if (_nextImageIndex < _imageList.length) {
         setState(() {
-          // 이미지와 위치를 결합하여 _displayedImages에 추가
           _displayedImages.add(
             Positioned(
               left: _positionList[_nextImageIndex].dx,
@@ -48,7 +46,7 @@ class _ExplainPageState extends State<ExplainPage> {
           _nextImageIndex++;
         });
       } else {
-        _timer.cancel(); // 모든 이미지가 표시된 후 타이머 중지
+        _timer.cancel(); 
         setState(() {
           _showOverlay = true;
         });
@@ -63,12 +61,12 @@ class _ExplainPageState extends State<ExplainPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     _positionList = [
-      Offset(screenWidth * -0.1, screenHeight * 0),  // 10% 오른쪽, 10% 아래
-      Offset(screenWidth * 0.35, screenHeight * 0.1),  // 50% 오른쪽, 10% 아래
-      Offset(screenWidth * -0.08, screenHeight * 0.3),  // 90% 오른쪽, 10% 아래
-      Offset(screenWidth * -0.2, screenHeight * 0.3),  // 10% 오른쪽, 50% 아래
-      Offset(screenWidth * -0.1, screenHeight * 0.5),  // 50% 오른쪽, 50% 아래
-      Offset(screenWidth * -0.1, screenHeight * 0.75),  // 90% 오른쪽, 50% 아래
+      Offset(screenWidth * -0.1, screenHeight * 0),  
+      Offset(screenWidth * 0.35, screenHeight * 0.1),  
+      Offset(screenWidth * -0.08, screenHeight * 0.3), 
+      Offset(screenWidth * -0.2, screenHeight * 0.3),  
+      Offset(screenWidth * -0.1, screenHeight * 0.5),  
+      Offset(screenWidth * -0.1, screenHeight * 0.75),  
     ];
   }
 
@@ -121,11 +119,11 @@ class _ExplainPageState extends State<ExplainPage> {
                                 onPressed: _onConfirmButtonPressed,
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), // 텍스트 색상
+                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), 
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), // 각진 모서리
+                                    borderRadius: BorderRadius.circular(8), 
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // 패딩 조정
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), 
                                 ),
                                 child: const Text('확인'),
                               ),
@@ -182,11 +180,11 @@ class _ExplainPageState extends State<ExplainPage> {
                                 onPressed: _isLoginButtonEnabled ? _onConfirmButtonPressed : null,
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), // 텍스트 색상
+                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), 
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), // 각진 모서리
+                                    borderRadius: BorderRadius.circular(8), 
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // 패딩 조정
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), 
                                 ),
                                 child: const Text('로그인하기'),
                               ),
