@@ -26,13 +26,14 @@ class _LoginState extends State<Login> {
 
     try {
       // Firestore에서 이메일과 비밀번호로 사용자 찾기
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(email).get();
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(email).get();
 
       if (userDoc.exists) {
         String storedPassword = userDoc['password'];
         if (password == storedPassword) {
           setState(() {
-            currentUserId = email; 
+            currentUserId = email;
           });
 
           Navigator.pushReplacement(
@@ -67,10 +68,11 @@ class _LoginState extends State<Login> {
               'assets/login.png',
               fit: BoxFit.cover,
               width: double.infinity,
-              height: 400, 
+              height: 400,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 27.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 27.0),
               child: Row(
                 children: [
                   Image.asset(
@@ -79,12 +81,13 @@ class _LoginState extends State<Login> {
                     width: 150,
                     height: 100,
                   ),
-                  const SizedBox(width: 10), 
+                  const SizedBox(width: 10),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
               child: Column(
                 children: [
                   TextField(
@@ -111,12 +114,12 @@ class _LoginState extends State<Login> {
                     child: ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7CC0FF), 
-                        foregroundColor: Colors.white, 
+                        backgroundColor: const Color(0xFF7CC0FF),
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3), 
+                          borderRadius: BorderRadius.circular(3),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15), 
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: const Text('로그인 하기'),
                     ),
@@ -128,16 +131,17 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Signup()),
+                          MaterialPageRoute(
+                              builder: (context) => const Signup()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, 
-                        foregroundColor: Colors.black, 
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3), 
+                          borderRadius: BorderRadius.circular(3),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15), 
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: const Text('회원가입 하기'),
                     ),

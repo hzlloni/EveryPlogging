@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  youtube_player_flutter: ^8.0.0 
 
 
   cupertino_icons: ^1.0.6
@@ -58,6 +59,8 @@ flutter:
      - assets/banner.png
      - assets/placeholder.png
      - assets/marker.png
+     - assets/notice.png
+     - assets/profile.png
 
 
   # example:

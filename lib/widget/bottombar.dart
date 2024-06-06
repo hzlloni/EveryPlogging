@@ -10,7 +10,7 @@ class BottomNavi extends StatefulWidget {
   final Function(int) onItemTapped;
 
   const BottomNavi({
-    super.key, 
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
   });
@@ -37,14 +37,14 @@ class _BottomNaviState extends State<BottomNavi> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Padding(
-              padding: const EdgeInsets.only(top: 15.0), 
+              padding: const EdgeInsets.only(top: 15.0),
               child: const Icon(Icons.map_outlined, size: 37),
             ),
             label: ' ',
           ),
           BottomNavigationBarItem(
             icon: Padding(
-              padding: const EdgeInsets.only(top: 15.0), 
+              padding: const EdgeInsets.only(top: 15.0),
               child: const FaIcon(FontAwesomeIcons.home, size: 30),
             ),
             label: ' ',

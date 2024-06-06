@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
           print('Selected Index: $index');
         },
       ),
-      backgroundColor: Color(0xFFCFEFFF), 
+      backgroundColor: Color(0xFFCFEFFF),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -64,9 +64,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: ListView(
-              children: [
-             
-              ],
+              children: [],
             ),
           ),
         ],
@@ -78,10 +76,10 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(builder: (context) => AddPage()),
           );
         },
-        backgroundColor: Color(0xFF7EC1DE), 
+        backgroundColor: Color(0xFF7EC1DE),
         child: Icon(
           Icons.add,
-          color: Colors.white, 
+          color: Colors.white,
         ),
       ),
     );
