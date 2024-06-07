@@ -7,6 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 
+import 'package:path/path.dart' as Path;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'login.dart'; 
 import 'homepage.dart'; 
 
@@ -18,7 +20,11 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddState extends State<AddPage> {
-  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  List<XFile> _images = [];
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _totalController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -76,13 +82,10 @@ class _AddState extends State<AddPage> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
+    final List<XFile>? selectedImages = await _picker.pickMultiImage();
+    if (selectedImages != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _images = selectedImages;
       });
     }
   }
@@ -115,6 +118,16 @@ class _AddState extends State<AddPage> {
     }
   }
 
+  Future<void> uploadFile(XFile file) async {
+    try {
+      await _storage
+          .ref('goods/${Path.basename(file.path)}')
+          .putFile(File(file.path));
+    } on FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> _saveData() async {
     if (_titleController.text.isEmpty || _totalController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,7 +147,6 @@ class _AddState extends State<AddPage> {
       if (currentUserId != null) {
         print('User ID used for Firestore query: $currentUserId');
 
-        // 사용자 문서를 참조하여 school 필드를 가져옴
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(currentUserId)
@@ -144,17 +156,26 @@ class _AddState extends State<AddPage> {
           String? schoolName = userDoc['school'];
 
           if (schoolName != null) {
-            // school 문서 참조
+            List<String> imageNames = [];
+            if (_images.isEmpty) {
+              imageNames.add('placeholder.png'); // Default image
+            } else {
+              for (final image in _images) {
+                await uploadFile(image);
+                String imageName = Path.basename(image.path);
+                imageNames.add(imageName);
+              }
+            }
+
             DocumentReference schoolDocRef =
                 FirebaseFirestore.instance.collection('school').doc(schoolName);
 
-            // 새로운 모임 데이터를 group 컬렉션에 추가
             await schoolDocRef
                 .collection('group')
                 .doc(_titleController.text)
                 .set({
               'title': _titleController.text,
-              'image_path': _image?.path ?? 'assets/placeholder.png',
+              'image_names': imageNames,
               'created_at': Timestamp.now(),
               'created_by': currentUserId, 
               'total': int.tryParse(_totalController.text), 
@@ -171,7 +192,6 @@ class _AddState extends State<AddPage> {
               SnackBar(content: Text('모임이 저장되었습니다.')),
             );
 
-            // 입력 필드 초기화
             _titleController.clear();
             _totalController.clear();
             _dateController.clear();
@@ -179,11 +199,10 @@ class _AddState extends State<AddPage> {
             _endTimeController.clear();
             _noticeController.clear();
             setState(() {
-              _image = null;
+              _images = [];
               _selectedLocation = null;
             });
 
-            // Navigate to HomePage
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => HomePage()));
           } else {
@@ -220,6 +239,11 @@ class _AddState extends State<AddPage> {
     });
   }
 
+  Future<String> getDefaultImageUrl() async {
+    String downloadURL = await _storage.ref('goods/placeholder.png').getDownloadURL();
+    return downloadURL;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -247,21 +271,91 @@ class _AddState extends State<AddPage> {
                 ),
               ),
               SizedBox(height: 16),
-              GestureDetector(
-                onTap: _pickImage,
-                child: _image == null
-                    ? Image.asset(
-                        'assets/placeholder.png', 
-                        height: screenHeight * 0.1,
-                        width: screenWidth,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.file(
-                        _image!,
-                        height: screenHeight * 0.1,
-                        width: screenWidth,
-                        fit: BoxFit.cover,
-                      ),
+              FutureBuilder<String>(
+                future: getDefaultImageUrl(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return _images.isEmpty
+                        ? Image.network(snapshot.data!)
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: _images.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 1,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Container(
+                                    height: 300, // 원하는 높이로 설정
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: FileImage(
+                                          File(_images[index].path),
+                                        ),
+                                      ),
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _images.removeAt(index);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                  }
+                },
+              ),
+              Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.lightBlueAccent,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 0.5,
+                      blurRadius: 5,
+                    )
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: _pickImage,
+                  icon: const Icon(
+                    Icons.add_photo_alternate_outlined,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
               ),
               SizedBox(height: 16),
               Row(
