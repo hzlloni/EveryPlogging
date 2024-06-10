@@ -1,4 +1,5 @@
 import 'package:everyplogging/add.dart';
+import 'package:everyplogging/edit.dart';
 import 'package:everyplogging/widget/bottombar.dart';
 import 'package:everyplogging/widget/mainappbar.dart';
 import 'package:flutter/material.dart';
@@ -80,117 +81,232 @@ class _HomePageState extends State<HomePage> {
         .getDownloadURL();
   }
 
+  Future<void> _deleteGroup(Map<String, dynamic> group) async {
+    if (currentUserId != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .get();
+
+        if (userDoc.exists) {
+          String? schoolName = userDoc['school'];
+
+          if (schoolName != null) {
+            await FirebaseFirestore.instance
+                .collection('school')
+                .doc(schoolName)
+                .collection('group')
+                .doc(group['title'])
+                .delete();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('모임이 삭제되었습니다.')),
+            );
+
+            _fetchGroups();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('사용자의 학교 정보를 찾을 수 없습니다.')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('사용자 문서를 찾을 수 없습니다.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임 삭제 중 오류가 발생했습니다: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인된 사용자가 없습니다.')),
+      );
+    }
+  }
+
+  void _showDeleteConfirmationDialog(Map<String, dynamic> group) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('모임 삭제'),
+          content: Text('정말로 이 모임을 삭제하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteGroup(group);
+              },
+              child: Text('삭제'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showGroupDetails(Map<String, dynamic> group) {
     showDialog(
       context: context,
       builder: (context) {
+        bool isCreator = group['created_by'] == currentUserId;
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FutureBuilder<String>(
-                  future: _getImageUrl(group['image_names']?.first ?? 'logo.png'),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
-                    } else {
-                      return Image.network(
-                        snapshot.data ?? '',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
-                        },
-                      );
-                    }
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        group['title'] ?? 'No Title',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      SizedBox(height: 10),
-                      Text('참여인원: ${group['current']}/${group['total']}'),
-                      SizedBox(height: 5),
-                      Text('주의사항:'),
-                      Text(group['notice'] ?? 'No Notice'),
-                      SizedBox(height: 10),
-                      Container(
-                        height: 200,
-                        width: double.infinity,
-                        child: GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                            target: LatLng(
-                              group['location'].latitude,
-                              group['location'].longitude,
-                            ),
-                            zoom: 14,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FutureBuilder<String>(
+                    future: _getImageUrl(group['image_names']?.first ?? 'logo.png'),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
+                      } else {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          child: Image.network(
+                            snapshot.data ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
+                            },
                           ),
-                          markers: {
-                            Marker(
-                              markerId: MarkerId('selectedLocation'),
-                              position: LatLng(
+                        );
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              group['title'] ?? 'No Title',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            if (isCreator)
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      _showEditGroupDetails(group);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      _showDeleteConfirmationDialog(group);
+                                    },
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Text('참여인원: ${group['current']}/${group['total']}'),
+                        SizedBox(height: 5),
+                        Text('주의사항:'),
+                        Text(group['notice'] ?? 'No Notice'),
+                        SizedBox(height: 10),
+                        Container(
+                          height: 200,
+                          width: double.infinity,
+                          child: GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: LatLng(
                                 group['location'].latitude,
                                 group['location'].longitude,
                               ),
+                              zoom: 14,
                             ),
-                          },
+                            markers: {
+                              Marker(
+                                markerId: MarkerId('selectedLocation'),
+                                position: LatLng(
+                                  group['location'].latitude,
+                                  group['location'].longitude,
+                                ),
+                              ),
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              // Add join logic here
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF79B6FF),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                side: BorderSide(color: Colors.black),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Add join logic here
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF79B6FF),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              child: Text(
+                                '참가하기',
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
-                            child: Text(
-                              '참가하기',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[300],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                side: BorderSide(color: Colors.black),
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[300],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              child: Text(
+                                '닫기',
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
-                            child: Text(
-                              '닫기',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  void _showEditGroupDetails(Map<String, dynamic> group) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditGroupPage(group: group)),
     );
   }
 
