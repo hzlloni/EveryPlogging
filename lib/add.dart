@@ -6,11 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
+import 'dart:math';
+import 'package:intl/intl.dart';
+
 
 import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
-import 'login.dart'; 
-import 'homepage.dart'; 
+import 'login.dart';
+import 'homepage.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -112,10 +115,19 @@ class _AddState extends State<AddPage> {
     );
 
     if (pickedTime != null) {
+      final now = DateTime.now();
+      final dt = DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
+      final format = DateFormat('HH:mm');
       setState(() {
-        controller.text = pickedTime.format(context);
+        controller.text = format.format(dt);
       });
     }
+  }
+
+  String _generateRandomCode(int length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    Random random = Random();
+    return String.fromCharCodes(Iterable.generate(length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
 
   Future<void> uploadFile(XFile file) async {
@@ -129,111 +141,114 @@ class _AddState extends State<AddPage> {
   }
 
   Future<void> _saveData() async {
-  if (_titleController.text.isEmpty || _totalController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('제목, 참여인원, 주의사항을 모두 입력해주세요.')),
-    );
-    return;
-  }
+    if (_titleController.text.isEmpty || _totalController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('제목, 참여인원, 주의사항을 모두 입력해주세요.')),
+      );
+      return;
+    }
 
-  if (_selectedLocation == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('위치를 선택해주세요.')),
-    );
-    return;
-  }
+    if (_selectedLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('위치를 선택해주세요.')),
+      );
+      return;
+    }
 
-  try {
-    if (currentUserId != null) {
-      print('User ID used for Firestore query: $currentUserId');
+    try {
+      if (currentUserId != null) {
+        print('User ID used for Firestore query: $currentUserId');
 
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUserId)
-          .get();
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .get();
 
-      if (userDoc.exists) {
-        String? schoolName = userDoc['school'];
+        if (userDoc.exists) {
+          String? schoolName = userDoc['school'];
 
-        if (schoolName != null) {
-          List<String> imageNames = [];
-          if (_images.isEmpty) {
-            imageNames.add('placeholder.png'); // Default image
-          } else {
-            for (final image in _images) {
-              await uploadFile(image);
-              String imageName = Path.basename(image.path);
-              imageNames.add(imageName);
+          if (schoolName != null) {
+            List<String> imageNames = [];
+            if (_images.isEmpty) {
+              imageNames.add('placeholder.png'); // Default image
+            } else {
+              for (final image in _images) {
+                await uploadFile(image);
+                String imageName = Path.basename(image.path);
+                imageNames.add(imageName);
+              }
             }
+
+            String randomCode = _generateRandomCode(6);
+
+            DocumentReference schoolDocRef =
+                FirebaseFirestore.instance.collection('school').doc(schoolName);
+
+            await schoolDocRef
+                .collection('group')
+                .doc(_titleController.text)
+                .set({
+              'title': _titleController.text,
+              'image_names': imageNames,
+              'created_at': Timestamp.now(),
+              'created_by': currentUserId,
+              'total': int.tryParse(_totalController.text),
+              'date': _dateController.text,
+              'start_time': _startTimeController.text,
+              'end_time': _endTimeController.text,
+              'notice': _noticeController.text,
+              'location': GeoPoint(_selectedLocation!.latitude,
+                  _selectedLocation!.longitude),
+              'current': 1,
+              'code': randomCode,
+            });
+
+            // 모임 생성 후 현재 유저의 attend 필드에 해당 모임 추가
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUserId)
+                .update({
+              'attend': FieldValue.arrayUnion([_titleController.text])
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('모임이 저장되었습니다.')),
+            );
+
+            _titleController.clear();
+            _totalController.clear();
+            _dateController.clear();
+            _startTimeController.clear();
+            _endTimeController.clear();
+            _noticeController.clear();
+            setState(() {
+              _images = [];
+              _selectedLocation = null;
+            });
+
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomePage()));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('사용자의 학교 정보를 찾을 수 없습니다.')),
+            );
           }
-
-          DocumentReference schoolDocRef =
-              FirebaseFirestore.instance.collection('school').doc(schoolName);
-
-          await schoolDocRef
-              .collection('group')
-              .doc(_titleController.text)
-              .set({
-            'title': _titleController.text,
-            'image_names': imageNames,
-            'created_at': Timestamp.now(),
-            'created_by': currentUserId, 
-            'total': int.tryParse(_totalController.text), 
-            'date': _dateController.text, 
-            'start_time': _startTimeController.text, 
-            'end_time': _endTimeController.text, 
-            'notice': _noticeController.text, 
-            'location': GeoPoint(_selectedLocation!.latitude,
-                _selectedLocation!.longitude), 
-            'current' : 1,
-          });
-
-          // 모임 생성 후 현재 유저의 attend 필드에 해당 모임 추가
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUserId)
-              .update({
-            'attend': FieldValue.arrayUnion([_titleController.text])
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('모임이 저장되었습니다.')),
-          );
-
-          _titleController.clear();
-          _totalController.clear();
-          _dateController.clear();
-          _startTimeController.clear();
-          _endTimeController.clear();
-          _noticeController.clear();
-          setState(() {
-            _images = [];
-            _selectedLocation = null;
-          });
-
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('사용자의 학교 정보를 찾을 수 없습니다.')),
+            SnackBar(content: Text('사용자 문서를 찾을 수 없습니다.')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('사용자 문서를 찾을 수 없습니다.')),
+          SnackBar(content: Text('로그인된 사용자가 없습니다.')),
         );
       }
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('로그인된 사용자가 없습니다.')),
+        SnackBar(content: Text('데이터 저장 중 오류가 발생했습니다: $e')),
       );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('데이터 저장 중 오류가 발생했습니다: $e')),
-    );
   }
-}
 
   void _onMapTapped(LatLng location) {
     setState(() {
@@ -508,11 +523,11 @@ class _AddState extends State<AddPage> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0), 
+                          vertical: 10.0, horizontal: 20.0),
                     ),
                     child: Text(
                       '모임 만들기',
-                      style: TextStyle(fontWeight: FontWeight.bold), 
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
