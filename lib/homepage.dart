@@ -50,7 +50,10 @@ class _HomePageState extends State<HomePage> {
 
             setState(() {
               groups = groupSnapshot.docs
-                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .map((doc) => {
+                        'schoolName': schoolName,
+                        ...doc.data() as Map<String, dynamic>
+                      })
                   .toList();
             });
           } else {
@@ -127,17 +130,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _joinGroup(String groupName) async {
+  Future<void> _joinGroup(Map<String, dynamic> group) async {
     if (currentUserId != null) {
       try {
         DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(currentUserId);
-        await userRef.update({
-          'attend': FieldValue.arrayUnion([groupName])
+        DocumentReference groupRef = FirebaseFirestore.instance.collection('school').doc(group['schoolName']).collection('group').doc(group['title']);
+
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot groupSnapshot = await transaction.get(groupRef);
+          if (groupSnapshot.exists) {
+            int currentCount = groupSnapshot['current'];
+
+            transaction.update(groupRef, {'current': currentCount + 1});
+            transaction.update(userRef, {'attend': FieldValue.arrayUnion([group['title']])});
+          } else {
+            throw Exception('Group document does not exist.');
+          }
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임에 참가했습니다.')),
         );
+
+        // 그룹 데이터 다시 가져오기
+        await _fetchGroups();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임 참가 중 오류가 발생했습니다: $e')),
@@ -150,17 +166,29 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _leaveGroup(String groupName) async {
+  Future<void> _leaveGroup(Map<String, dynamic> group) async {
     if (currentUserId != null) {
       try {
         DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(currentUserId);
-        await userRef.update({
-          'attend': FieldValue.arrayRemove([groupName])
+        DocumentReference groupRef = FirebaseFirestore.instance.collection('school').doc(group['schoolName']).collection('group').doc(group['title']);
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot groupSnapshot = await transaction.get(groupRef);
+          if (groupSnapshot.exists) {
+            int currentCount = groupSnapshot['current'];
+
+            transaction.update(groupRef, {'current': currentCount - 1});
+            transaction.update(userRef, {'attend': FieldValue.arrayRemove([group['title']])});
+          } else {
+            throw Exception('Group document does not exist.');
+          }
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임 참가가 취소되었습니다.')),
         );
+
+        // 그룹 데이터 다시 가져오기
+        await _fetchGroups();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('모임 참가 취소 중 오류가 발생했습니다: $e')),
@@ -310,22 +338,28 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (isAttending) {
-                                      _leaveGroup(group['title']);
+                                    if (isCreator) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('방장은 참가/취소 버튼을 사용할 수 없습니다.')),
+                                      );
                                     } else {
-                                      _joinGroup(group['title']);
+                                      if (isAttending) {
+                                        _leaveGroup(group);
+                                      } else {
+                                        _joinGroup(group);
+                                      }
                                     }
                                     Navigator.of(context).pop();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: isAttending ? Color(0xFF79B6FF) : Color(0xFF79B6FF),
+                                    backgroundColor: isCreator ? Colors.grey : (isAttending ? Color(0xFF79B6FF) : Color(0xFF79B6FF)),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.0),
                                       side: BorderSide(color: Colors.black),
                                     ),
                                   ),
                                   child: Text(
-                                    isAttending ? '참가 취소하기' : '참가하기',
+                                    isCreator ? '방장' : isAttending ? '참가 취소하기' : '참가하기',
                                     style: TextStyle(color: Colors.black),
                                   ),
                                 ),
@@ -461,7 +495,7 @@ class GroupCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
         side: BorderSide(
           color: Colors.black,
-          width: 1.5,
+          width: 1.3,
         ),
       ),
       child: ListTile(
@@ -469,7 +503,7 @@ class GroupCard extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
         title: Text(
           group['title'] ?? 'No Title',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

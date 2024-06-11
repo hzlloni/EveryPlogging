@@ -55,58 +55,61 @@ class _SignupState extends State<Signup> {
     }
   }
 
-  void _saveUserData() async {
-    if (_isDuplicate) {
-      setState(() {
-        _duplicateCheckMessage = '중복된 아이디입니다. 다른 아이디를 사용하세요.';
-      });
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() {
-        _passwordErrorMessage = '비밀번호가 일치하지 않습니다.';
-      });
-      return;
-    }
-
-    if (_nameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty ||
-        _schoolController.text.isEmpty ||
-        _birthController.text.isEmpty) {
-      setState(() {
-        _fieldErrorMessage = '모든 정보를 입력해 주세요.';
-      });
-      return;
-    }
-
+void _saveUserData() async {
+  if (_isDuplicate) {
     setState(() {
-      _isRegistering = true;
+      _duplicateCheckMessage = '중복된 아이디입니다. 다른 아이디를 사용하세요.';
+    });
+    return;
+  }
+
+  if (_passwordController.text != _confirmPasswordController.text) {
+    setState(() {
+      _passwordErrorMessage = '비밀번호가 일치하지 않습니다.';
+    });
+    return;
+  }
+
+  if (_nameController.text.isEmpty ||
+      _emailController.text.isEmpty ||
+      _passwordController.text.isEmpty ||
+      _confirmPasswordController.text.isEmpty ||
+      _schoolController.text.isEmpty ||
+      _birthController.text.isEmpty) {
+    setState(() {
+      _fieldErrorMessage = '모든 정보를 입력해 주세요.';
+    });
+    return;
+  }
+
+  setState(() {
+    _isRegistering = true;
+  });
+
+  try {
+    await _firestore.collection('users').doc(_emailController.text).set({
+      'name': _nameController.text,
+      'birthdate': _birthController.text,
+      'email': _emailController.text,
+      'password': _passwordController.text,
+      'school': _schoolController.text,
+      'attend': [], // 비어 있는 attend 필드를 추가합니다.
+      'end': [], // 비어 있는 end 필드를 추가합니다.
     });
 
-    try {
-      await _firestore.collection('users').doc(_emailController.text).set({
-        'name': _nameController.text,
-        'birthdate': _birthController.text,
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'school': _schoolController.text,
-      });
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Login()),
-      );
-    } catch (e) {
-      print('Error saving user data: $e');
-    } finally {
-      setState(() {
-        _isRegistering = false;
-      });
-    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Login()),
+    );
+  } catch (e) {
+    print('Error saving user data: $e');
+  } finally {
+    setState(() {
+      _isRegistering = false;
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +266,7 @@ class _SignupState extends State<Signup> {
                             if (recognizedText.text.contains('한동대') ||
                                 recognizedText.text.contains('HANDONG')) {
                               setState(() {
-                                _schoolController.text = '한동대';
+                                _schoolController.text = '한동대학교';
                               });
                             }
 
