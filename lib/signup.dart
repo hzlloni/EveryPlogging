@@ -1,3 +1,4 @@
+import 'package:everyplogging/explainPage.dart';
 import 'package:everyplogging/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
@@ -99,7 +100,7 @@ void _saveUserData() async {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const Login()),
+      MaterialPageRoute(builder: (context) => const ExplainPage()),
     );
   } catch (e) {
     print('Error saving user data: $e');

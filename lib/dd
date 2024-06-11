@@ -268,7 +268,51 @@ class _MapState extends State<Map> {
                         SizedBox(height: 10),
                         // Add Google Map or other details if needed
                         SizedBox(height: 10),
-                        
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                if (isCreator) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('방장은 참가/취소 버튼을 사용할 수 없습니다.')),
+                                  );
+                                } else {
+                                  // Join or leave group
+                                }
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isCreator ? Colors.grey : Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              child: Text(
+                                isCreator ? '방장' : '참가하기',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[300],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  side: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              child: Text(
+                                '닫기',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -323,3 +367,4 @@ class _MapState extends State<Map> {
     );
   }
 }
+그 다 좋은데, 이미 참가하고 있으면,, 참가 취소하기로 바꿔주고, 방장이면 그냥 방장으로 바꿔줘..

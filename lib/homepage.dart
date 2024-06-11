@@ -340,7 +340,7 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () {
                                     if (isCreator) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('방장은 참가/취소 버튼을 사용할 수 없습니다.')),
+                                        SnackBar(content: Text('방장은 시작하기 및 모임 취소하기를 마이페이지에서 선택하실 수 있습니다')),
                                       );
                                     } else {
                                       if (isAttending) {
@@ -515,19 +515,19 @@ class GroupCard extends StatelessWidget {
         trailing: ElevatedButton(
           onPressed: onTap,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF79B6FF), // Button color
+            backgroundColor: Color(0xFF79B6FF), 
             padding: EdgeInsets.symmetric(
                 vertical: 2.0,
-                horizontal: 10.0), // Adjust padding to make button smaller
-            minimumSize: Size(70, 36), // Set minimum size to make button smaller
+                horizontal: 10.0), 
+            minimumSize: Size(70, 36), 
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
-              side: BorderSide(color: Colors.black), // Black border
+              side: BorderSide(color: Colors.black), 
             ),
           ),
           child: Text(
             '자세히 보기',
-            style: TextStyle(color: Colors.black), // Black text color
+            style: TextStyle(color: Colors.black), 
           ),
         ),
       ),
