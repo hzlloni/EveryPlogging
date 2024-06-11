@@ -82,10 +82,31 @@ class _ExplainPageState extends State<ExplainPage> {
     setState(() {
       _showCheckboxes = true;
     });
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Login()),
-    );
+  }
+
+  void _onLoginButtonPressed() {
+    if (_isLoginButtonEnabled) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    }
+  }
+
+  void _onCheckboxChanged(bool? newValue, int checkboxIndex) {
+    setState(() {
+      switch (checkboxIndex) {
+        case 1:
+          _isChecked1 = newValue ?? false;
+          break;
+        case 2:
+          _isChecked2 = newValue ?? false;
+          break;
+        case 3:
+          _isChecked3 = newValue ?? false;
+          break;
+      }
+    });
   }
 
   @override
@@ -144,40 +165,40 @@ class _ExplainPageState extends State<ExplainPage> {
                               const SizedBox(height: 10),
                               CheckboxListTile(
                                 activeColor: const Color.fromARGB(255, 18, 166, 45),
-                                title: const Text("플로깅이 무엇인지 알고,\n실천하도록 노력하겠습니다",
-                                style: TextStyle(fontSize: 15)),
+                                title: const Text(
+                                  "플로깅이 무엇인지 알고,\n실천하도록 노력하겠습니다",
+                                  style: TextStyle(fontSize: 15),
+                                ),
                                 value: _isChecked1,
                                 onChanged: (value) {
-                                  setState(() {
-                                    _isChecked1 = value!;
-                                  });
+                                  _onCheckboxChanged(value, 1);
                                 },
                               ),
                               CheckboxListTile(
                                 activeColor: const Color.fromARGB(255, 18, 166, 45),
-                                title: const Text("‘나’뿐만 아니라 주변사람들에게도\n플로깅을 알려주고 함께 참여하겠습니다",
-                                style: TextStyle(fontSize: 15)),
+                                title: const Text(
+                                  "‘나’뿐만 아니라 주변사람들에게도\n플로깅을 알려주고 함께 참여하겠습니다",
+                                  style: TextStyle(fontSize: 15),
+                                ),
                                 value: _isChecked2,
                                 onChanged: (value) {
-                                  setState(() {
-                                    _isChecked2 = value!;
-                                  });
+                                  _onCheckboxChanged(value, 2);
                                 },
                               ),
                               CheckboxListTile(
                                 activeColor: const Color.fromARGB(255, 18, 166, 45),
-                                title: const Text("주 1회이상 플로깅을\n실천하도록 노력하겠습니다",
-                                style: TextStyle(fontSize: 15)),
+                                title: const Text(
+                                  "주 1회이상 플로깅을\n실천하도록 노력하겠습니다",
+                                  style: TextStyle(fontSize: 15),
+                                ),
                                 value: _isChecked3,
                                 onChanged: (value) {
-                                  setState(() {
-                                    _isChecked3 = value!;
-                                  });
+                                  _onCheckboxChanged(value, 3);
                                 },
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
-                                onPressed: _isLoginButtonEnabled ? _onConfirmButtonPressed : null,
+                                onPressed: _isLoginButtonEnabled ? _onLoginButtonPressed : null,
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
                                   backgroundColor: const Color.fromARGB(255, 18, 166, 45), 

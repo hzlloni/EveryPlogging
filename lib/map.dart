@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:everyplogging/widget/bottombar.dart';
 import 'package:everyplogging/widget/mainappbar.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -107,6 +108,11 @@ class _MapState extends State<Map> {
       for (var doc in querySnapshot.docs) {
         GeoPoint geoPoint = doc['location'];
         String title = doc['title'];
+        String notice = doc['notice'] ?? 'No Notice';
+        int current = doc['current'];
+        int total = doc['total'];
+        String createdBy = doc['created_by'];
+        String imageNames = doc['image_names']?.first ?? 'logo.png';
 
         BitmapDescriptor customIcon = await _createCustomMarkerWithImage(title);
 
@@ -116,6 +122,16 @@ class _MapState extends State<Map> {
               markerId: MarkerId(doc.id),
               position: LatLng(geoPoint.latitude, geoPoint.longitude),
               icon: customIcon,
+              onTap: () {
+                _showGroupDetails(
+                  title: title,
+                  notice: notice,
+                  current: current,
+                  total: total,
+                  createdBy: createdBy,
+                  imageNames: imageNames,
+                );
+              },
             ),
           );
         });
@@ -128,8 +144,8 @@ class _MapState extends State<Map> {
   Future<BitmapDescriptor> _createCustomMarkerWithImage(String text) async {
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    const double markerWidth = 170.0; 
-    const double markerHeight = 170.0; 
+    const double markerWidth = 170.0;
+    const double markerHeight = 170.0;
 
     final ByteData data = await rootBundle.load('assets/marker.png');
     final ui.Codec codec = await ui.instantiateImageCodec(
@@ -165,6 +181,110 @@ class _MapState extends State<Map> {
     final dataBytes = await img.toByteData(format: ui.ImageByteFormat.png);
 
     return BitmapDescriptor.fromBytes(dataBytes!.buffer.asUint8List());
+  }
+
+  void _showGroupDetails({
+    required String title,
+    required String notice,
+    required int current,
+    required int total,
+    required String createdBy,
+    required String imageNames,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool isCreator = createdBy == 'currentUserId';  // Replace 'currentUserId' with actual current user ID
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FutureBuilder<String>(
+                    future: _getImageUrl(imageNames),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
+                      } else {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          child: Image.network(
+                            snapshot.data ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/placeholder.png', fit: BoxFit.cover);
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            if (isCreator)
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      // Edit group details
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      // Delete group
+                                    },
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Text('참여인원: $current/$total'),
+                        SizedBox(height: 5),
+                        Text('주의사항:'),
+                        Text(notice),
+                        SizedBox(height: 10),
+                        // Add Google Map or other details if needed
+                        SizedBox(height: 10),
+                        
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String> _getImageUrl(String imageName) async {
+    return await FirebaseStorage.instance
+        .ref('goods/$imageName')
+        .getDownloadURL();
   }
 
   @override
