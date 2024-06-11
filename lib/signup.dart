@@ -250,7 +250,9 @@ class _SignupState extends State<Signup> {
                                 InputImage.fromFilePath(pickedFile.path);
 
                             // 텍스트 인식기 인스턴스 생성
-                            final textRecognizer = TextRecognizer();
+                            final textRecognizer = GoogleMlKit.vision
+                                .textRecognizer(
+                                    script: TextRecognitionScript.korean);
 
                             // 텍스트 인식 수행
                             final RecognizedText recognizedText =
@@ -263,7 +265,7 @@ class _SignupState extends State<Signup> {
                             if (recognizedText.text.contains('한동대') ||
                                 recognizedText.text.contains('HANDONG')) {
                               setState(() {
-                                _schoolController.text = '한동대';
+                                _schoolController.text = '한동대학교';
                               });
                             }
 

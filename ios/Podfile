@@ -35,7 +35,8 @@ target 'Runner' do
 
   # Your 'pod' lines here
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'GoogleMLKit/TextRecognitionKorean', '16.0.0-beta5'
+  #pod 'GoogleMLKit/TextRecognitionKorean', '16.0.0-beta5'
+  pod 'GoogleMLKit/TextRecognitionKorean'
 end
 
 post_install do |installer|

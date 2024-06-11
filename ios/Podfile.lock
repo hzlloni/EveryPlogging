@@ -1142,6 +1142,9 @@ PODS:
   - GoogleMLKit/TextRecognition (4.0.0):
     - GoogleMLKit/MLKitCore
     - MLKitTextRecognition (~> 2.0.0)
+  - GoogleMLKit/TextRecognitionKorean (4.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognitionKorean (~> 1.0.0)
   - GoogleMLKit/Translate (4.0.0):
     - GoogleMLKit/MLKitCore
     - MLKitTranslate (~> 3.0.0)
@@ -1354,6 +1357,10 @@ PODS:
   - MLKitTextRecognitionCommon (1.0.0):
     - MLKitCommon (~> 9.0)
     - MLKitVision (~> 5.0)
+  - MLKitTextRecognitionKorean (1.0.0):
+    - MLKitCommon (~> 9.0)
+    - MLKitTextRecognitionCommon (= 1.0.0)
+    - MLKitVision (~> 5.0)
   - MLKitTranslate (3.0.0):
     - MLKitNaturalLanguage (~> 5.0)
     - SSZipArchive (< 2.2, >= 2.1)
@@ -1407,6 +1414,7 @@ DEPENDENCIES:
   - google_mlkit_smart_reply (from `.symlinks/plugins/google_mlkit_smart_reply/ios`)
   - google_mlkit_text_recognition (from `.symlinks/plugins/google_mlkit_text_recognition/ios`)
   - google_mlkit_translation (from `.symlinks/plugins/google_mlkit_translation/ios`)
+  - GoogleMLKit/TextRecognitionKorean
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
@@ -1458,6 +1466,7 @@ SPEC REPOS:
     - MLKitSmartReply
     - MLKitTextRecognition
     - MLKitTextRecognitionCommon
+    - MLKitTextRecognitionKorean
     - MLKitTranslate
     - MLKitVision
     - MLKitVisionKit
@@ -1593,6 +1602,7 @@ SPEC CHECKSUMS:
   MLKitSmartReply: 1b7d39c9f363133bb67c9ddf9ffafada5ecd82b5
   MLKitTextRecognition: 9ff0c843f2723d31d4bdd0c0d17a0a18382ed23e
   MLKitTextRecognitionCommon: 0d48930fee25cce9d52d0ba217490d4797061aa2
+  MLKitTextRecognitionKorean: 8de40a4e5081242a7a83187583a3a7b57b5a703b
   MLKitTranslate: e805e2873e0fbb211547c714b40c22c08cb8d7cb
   MLKitVision: 8baa5f46ee3352614169b85250574fde38c36f49
   MLKitVisionKit: 5b5472d40ffc143bda693ba20a3cff44fe627d41
@@ -1604,6 +1614,6 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   SSZipArchive: cefe1364104a0231268a5deb8495bdf2861f52f0
 
-PODFILE CHECKSUM: e7f79737deacd029060de562b07d3d58bad76431
+PODFILE CHECKSUM: 00fc3a3f9f1610e6d908bf0fa40f49d3b30e47a7
 
 COCOAPODS: 1.15.2
