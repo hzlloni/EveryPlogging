@@ -127,6 +127,52 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _joinGroup(String groupName) async {
+    if (currentUserId != null) {
+      try {
+        DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(currentUserId);
+        await userRef.update({
+          'attend': FieldValue.arrayUnion([groupName])
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임에 참가했습니다.')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임 참가 중 오류가 발생했습니다: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인된 사용자가 없습니다.')),
+      );
+    }
+  }
+
+  Future<void> _leaveGroup(String groupName) async {
+    if (currentUserId != null) {
+      try {
+        DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(currentUserId);
+        await userRef.update({
+          'attend': FieldValue.arrayRemove([groupName])
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임 참가가 취소되었습니다.')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('모임 참가 취소 중 오류가 발생했습니다: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인된 사용자가 없습니다.')),
+      );
+    }
+  }
+
   void _showDeleteConfirmationDialog(Map<String, dynamic> group) {
     showDialog(
       context: context,
@@ -253,43 +299,56 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // Add join logic here
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF79B6FF),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  side: BorderSide(color: Colors.black),
+                        FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance.collection('users').doc(currentUserId).get(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) return CircularProgressIndicator();
+                            List<dynamic> attend = snapshot.data!['attend'] ?? [];
+                            bool isAttending = attend.contains(group['title']);
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (isAttending) {
+                                      _leaveGroup(group['title']);
+                                    } else {
+                                      _joinGroup(group['title']);
+                                    }
+                                    Navigator.of(context).pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isAttending ? Color(0xFF79B6FF) : Color(0xFF79B6FF),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      side: BorderSide(color: Colors.black),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    isAttending ? '참가 취소하기' : '참가하기',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
                                 ),
-                              ),
-                              child: Text(
-                                '참가하기',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[300],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  side: BorderSide(color: Colors.black),
+                                SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey[300],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      side: BorderSide(color: Colors.black),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '닫기',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
                                 ),
-                              ),
-                              child: Text(
-                                '닫기',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ],
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
