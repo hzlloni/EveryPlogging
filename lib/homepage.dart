@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<dynamic> imgList = [
     'assets/banner.png',
+    'assets/banner2.png',
   ];
 
   List<Map<String, dynamic>> groups = [];
