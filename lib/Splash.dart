@@ -44,7 +44,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _controller.forward();
 
 
-    Future.delayed(const Duration(milliseconds: 2050), () {
+    Future.delayed(const Duration(milliseconds: 2360), () {
       _pickupController.forward();
     });
 
