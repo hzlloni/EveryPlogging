@@ -16,7 +16,8 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   String name = '';
   String school = '';
-  int hours = 0;
+  int mytime = 0;
+  List<String> attend = [];
 
   @override
   void initState() {
@@ -33,7 +34,8 @@ class _ProfileState extends State<Profile> {
       setState(() {
         name = userDoc['name'];
         school = userDoc['school'];
-        //hours = userDoc['hours'];
+        mytime = userDoc['mytime'];
+        attend = List<String>.from(userDoc['attend'] ?? []);
       });
     }
   }
@@ -52,7 +54,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: SubAppBar(),
       bottomNavigationBar: BottomNavi(
-        selectedIndex: 2,
+        selectedIndex: 1,
         onItemTapped: (index) {
           print('Selected Index: $index');
         },
@@ -83,24 +85,31 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                Spacer(),
-                // Text(
-                //     "$hours시간",
-                //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                //     ),
+                //Spacer(),
+                SizedBox(width: 130),
+                Text(
+                  "$mytime 시간",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             SizedBox(height: 30),
-            _buildSectionHeader("신청건 1건"),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildRequestCard("플로깅 폼 미쳤다", "한동대학교", "시작하기"),
-                _buildRequestCard("영일대를 깨끗하게", "영일대", "취소하기"),
-              ],
+            _buildSectionHeader("신청건 ${attend.length}건"),
+            SizedBox(height: 15),
+            SizedBox(
+              height: 140, // Adjust the height as needed
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: attend
+                      .map((item) => _buildRequestCard(item, "시작하기"))
+                      .toList(),
+                ),
+              ),
             ),
             SizedBox(height: 30),
             _buildSectionHeader("지난기록"),
+            SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -127,16 +136,64 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildRequestCard(String title, String location, String buttonLabel) {
+  Widget _buildRequestCard(String title, String buttonLabel) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        side: BorderSide(color: Colors.black, width: 1),
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        width: 290,
+        height: 130,
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("위치: $location"),
-            ElevatedButton(onPressed: () {}, child: Text(buttonLabel)),
+            Text(
+              title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            // Row(
+            //   children: [
+            //     Icon(Icons.place, size: 16, color: Colors.grey),
+            //     SizedBox(width: 5),
+            //     Text(
+            //       '위치 : 한동대학교',
+            //       style: TextStyle(fontSize: 14, color: Colors.grey),
+            //     ),
+            //   ],
+            // ),
+            SizedBox(height: 10),
+            Row(
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF79B6FF),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0), // 버튼 둥글기
+                    ),
+                  ),
+                  child: Text("시작하기"),
+                ),
+                SizedBox(width: 25),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFCCCBCB),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0), // 버튼 둥글기
+                    ),
+                  ),
+                  child: Text("취소하기"),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -151,7 +208,6 @@ class _ProfileState extends State<Profile> {
           children: [
             Text(title,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("위치: $location"),
           ],
         ),
       ),
