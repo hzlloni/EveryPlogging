@@ -9,7 +9,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:intl/intl.dart';
 
-
 import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'login.dart';
@@ -116,7 +115,8 @@ class _AddState extends State<AddPage> {
 
     if (pickedTime != null) {
       final now = DateTime.now();
-      final dt = DateTime(now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
+      final dt = DateTime(
+          now.year, now.month, now.day, pickedTime.hour, pickedTime.minute);
       final format = DateFormat('HH:mm');
       setState(() {
         controller.text = format.format(dt);
@@ -127,7 +127,8 @@ class _AddState extends State<AddPage> {
   String _generateRandomCode(int length) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     Random random = Random();
-    return String.fromCharCodes(Iterable.generate(length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+    return String.fromCharCodes(Iterable.generate(
+        length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
 
   Future<void> uploadFile(XFile file) async {
@@ -197,8 +198,8 @@ class _AddState extends State<AddPage> {
               'start_time': _startTimeController.text,
               'end_time': _endTimeController.text,
               'notice': _noticeController.text,
-              'location': GeoPoint(_selectedLocation!.latitude,
-                  _selectedLocation!.longitude),
+              'location': GeoPoint(
+                  _selectedLocation!.latitude, _selectedLocation!.longitude),
               'current': 1,
               'code': randomCode,
             });
@@ -263,7 +264,8 @@ class _AddState extends State<AddPage> {
   }
 
   Future<String> getDefaultImageUrl() async {
-    String downloadURL = await _storage.ref('goods/placeholder.png').getDownloadURL();
+    String downloadURL =
+        await _storage.ref('goods/placeholder.png').getDownloadURL();
     return downloadURL;
   }
 

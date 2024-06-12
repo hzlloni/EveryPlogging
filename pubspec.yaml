@@ -14,7 +14,6 @@ dependencies:
   youtube_player_flutter: ^8.0.0
   google_ml_kit: ^0.16.0
 
-
   cupertino_icons: ^1.0.6
   firebase_core: ^2.31.1
   firebase_auth: ^4.19.6
@@ -30,12 +29,19 @@ dependencies:
   location: ^6.0.2
   carousel_slider: ^4.0.0
   image_picker: ^0.8.4+4
-  intl: ^0.17.0
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/icon.png"
+  remove_alpha_ios: true
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -64,6 +70,7 @@ flutter:
      - assets/marker.png
      - assets/notice.png
      - assets/profile.png
+     - assets/icon.png
 
 
   # example:
