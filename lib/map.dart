@@ -113,28 +113,40 @@ class _MapState extends State<Map> {
         int total = doc['total'];
         String createdBy = doc['created_by'];
         String imageNames = doc['image_names']?.first ?? 'logo.png';
+        String date = doc['date'] ?? '날짜 정보 없음';
+        String startTime = doc['start_time'] ?? '시간 정보 없음';
+        String endTime = doc['end_time'] ?? '시간 정보 없음';
 
-        BitmapDescriptor customIcon = await _createCustomMarkerWithImage(title);
+        // Check if the group is in the creator's 'end' field
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(createdBy).get();
+        List<dynamic> endedGroups = userDoc['end'] ?? [];
 
-        setState(() {
-          _markers.add(
-            Marker(
-              markerId: MarkerId(doc.id),
-              position: LatLng(geoPoint.latitude, geoPoint.longitude),
-              icon: customIcon,
-              onTap: () {
-                _showGroupDetails(
-                  title: title,
-                  notice: notice,
-                  current: current,
-                  total: total,
-                  createdBy: createdBy,
-                  imageNames: imageNames,
-                );
-              },
-            ),
-          );
-        });
+        if (!endedGroups.contains(title)) {
+          BitmapDescriptor customIcon = await _createCustomMarkerWithImage(title);
+
+          setState(() {
+            _markers.add(
+              Marker(
+                markerId: MarkerId(doc.id),
+                position: LatLng(geoPoint.latitude, geoPoint.longitude),
+                icon: customIcon,
+                onTap: () {
+                  _showGroupDetails(
+                    title: title,
+                    notice: notice,
+                    current: current,
+                    total: total,
+                    createdBy: createdBy,
+                    imageNames: imageNames,
+                    date: date,
+                    startTime: startTime,
+                    endTime: endTime,
+                  );
+                },
+              ),
+            );
+          });
+        }
       }
     } catch (e) {
       print('Error fetching meeting locations: $e');
@@ -190,6 +202,9 @@ class _MapState extends State<Map> {
     required int total,
     required String createdBy,
     required String imageNames,
+    required String date,
+    required String startTime,
+    required String endTime,
   }) {
     showDialog(
       context: context,
@@ -263,12 +278,15 @@ class _MapState extends State<Map> {
                         SizedBox(height: 10),
                         Text('참여인원: $current/$total'),
                         SizedBox(height: 5),
+                        Text('모임 날짜: $date'),
+                        SizedBox(height: 5),
+                        Text('시간: $startTime ~ $endTime'),
+                        SizedBox(height: 5),
                         Text('주의사항:'),
                         Text(notice),
                         SizedBox(height: 10),
                         // Add Google Map or other details if needed
                         SizedBox(height: 10),
-                        
                       ],
                     ),
                   ),

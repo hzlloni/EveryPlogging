@@ -30,6 +30,8 @@ dependencies:
   carousel_slider: ^4.0.0
   image_picker: ^0.8.4+4
   intl: ^0.18.0
+  lottie: ^1.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -66,11 +68,16 @@ flutter:
      - assets/pickUpTrash.png
      - assets/jogging.png
      - assets/banner.png
+     - assets/banner2.png
      - assets/placeholder.png
      - assets/marker.png
      - assets/notice.png
      - assets/profile.png
      - assets/icon.png
+     - assets/king.png
+     - assets/rank.png
+     - assets/congrats.json
+     - assets/congrats2.json
 
 
   # example:
