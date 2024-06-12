@@ -48,13 +48,30 @@ class _HomePageState extends State<HomePage> {
                 .collection('group')
                 .get();
 
+            List<Map<String, dynamic>> fetchedGroups = [];
+
+            for (var doc in groupSnapshot.docs) {
+              Map<String, dynamic> groupData = {
+                'schoolName': schoolName,
+                ...doc.data() as Map<String, dynamic>
+              };
+
+              // 방장의 end 필드 확인
+              DocumentSnapshot creatorDoc = await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(groupData['created_by'])
+                  .get();
+
+              if (creatorDoc.exists) {
+                List<dynamic> endedGroups = creatorDoc['end'] ?? [];
+                if (!endedGroups.contains(groupData['title'])) {
+                  fetchedGroups.add(groupData);
+                }
+              }
+            }
+
             setState(() {
-              groups = groupSnapshot.docs
-                  .map((doc) => {
-                        'schoolName': schoolName,
-                        ...doc.data() as Map<String, dynamic>
-                      })
-                  .toList();
+              groups = fetchedGroups;
             });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -301,6 +318,10 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(height: 10),
                         Text('참여인원: ${group['current']}/${group['total']}'),
                         SizedBox(height: 5),
+                        Text('모임 날짜: ${group['date'] ?? '날짜 정보 없음'}'),  
+                        SizedBox(height: 5),
+                        Text('시간: ${group['start_time'] ?? '시간 정보 없음'} ~ ${group['end_time'] ?? '시간 정보 없음'} '), 
+                        SizedBox(height: 5),
                         Text('주의사항:'),
                         Text(group['notice'] ?? 'No Notice'),
                         SizedBox(height: 10),
@@ -498,37 +519,55 @@ class GroupCard extends StatelessWidget {
           width: 1.3,
         ),
       ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-        title: Text(
-          group['title'] ?? 'No Title',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        subtitle: Column(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 5),
-            Text('${group['current']}/${group['total']}'),
-          ],
-        ),
-        trailing: ElevatedButton(
-          onPressed: onTap,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF79B6FF), 
-            padding: EdgeInsets.symmetric(
-                vertical: 2.0,
-                horizontal: 10.0), 
-            minimumSize: Size(70, 36), 
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              side: BorderSide(color: Colors.black), 
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 7),
+                  Text(
+                    group['title'] ?? 'No Title',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '${group['date'] ?? '날짜 정보 없음'}',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
             ),
-          ),
-          child: Text(
-            '자세히 보기',
-            style: TextStyle(color: Colors.black), 
-          ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 5),
+                Text(
+                  '참여인원: ${group['current']}/${group['total']}',
+                  style: TextStyle(fontSize: 10),
+                ),
+                ElevatedButton(
+                  onPressed: onTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF79B6FF),
+                    padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+                    minimumSize: Size(60, 30),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  child: Text(
+                    '자세히 보기',
+                    style: TextStyle(color: Colors.black, fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

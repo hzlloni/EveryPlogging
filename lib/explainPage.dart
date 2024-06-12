@@ -33,6 +33,13 @@ class _ExplainPageState extends State<ExplainPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _positionList = _calculateImagePositions();
+      _startImageAnimation();
+    });
+  }
+
+  void _startImageAnimation() {
     _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       if (_nextImageIndex < _imageList.length) {
         setState(() {
@@ -46,7 +53,7 @@ class _ExplainPageState extends State<ExplainPage> {
           _nextImageIndex++;
         });
       } else {
-        _timer.cancel(); 
+        _timer.cancel();
         setState(() {
           _showOverlay = true;
         });
@@ -54,19 +61,17 @@ class _ExplainPageState extends State<ExplainPage> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  List<Offset> _calculateImagePositions() {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    _positionList = [
-      Offset(screenWidth * -0.1, screenHeight * 0),  
-      Offset(screenWidth * 0.35, screenHeight * 0.1),  
-      Offset(screenWidth * -0.08, screenHeight * 0.3), 
-      Offset(screenWidth * -0.2, screenHeight * 0.3),  
-      Offset(screenWidth * -0.1, screenHeight * 0.5),  
-      Offset(screenWidth * -0.1, screenHeight * 0.75),  
+    return [
+      Offset(screenWidth * -0.1, screenHeight * 0),
+      Offset(screenWidth * 0.35, screenHeight * 0.1),
+      Offset(screenWidth * -0.08, screenHeight * 0.3),
+      Offset(screenWidth * -0.2, screenHeight * 0.3),
+      Offset(screenWidth * -0.1, screenHeight * 0.5),
+      Offset(screenWidth * -0.1, screenHeight * 0.75),
     ];
   }
 
@@ -76,8 +81,6 @@ class _ExplainPageState extends State<ExplainPage> {
     super.dispose();
   }
 
-  bool get _isLoginButtonEnabled => _isChecked1 && _isChecked2 && _isChecked3;
-
   void _onConfirmButtonPressed() {
     setState(() {
       _showCheckboxes = true;
@@ -85,8 +88,8 @@ class _ExplainPageState extends State<ExplainPage> {
   }
 
   void _onLoginButtonPressed() {
-    if (_isLoginButtonEnabled) {
-      Navigator.push(
+    if (_isChecked1 && _isChecked2 && _isChecked3) {
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Login()),
       );
@@ -140,11 +143,11 @@ class _ExplainPageState extends State<ExplainPage> {
                                 onPressed: _onConfirmButtonPressed,
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), 
+                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), 
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), 
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                 ),
                                 child: const Text('확인'),
                               ),
@@ -198,14 +201,14 @@ class _ExplainPageState extends State<ExplainPage> {
                               ),
                               const SizedBox(height: 10),
                               ElevatedButton(
-                                onPressed: _isLoginButtonEnabled ? _onLoginButtonPressed : null,
+                                onPressed: _onLoginButtonPressed,
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45), 
+                                  backgroundColor: const Color.fromARGB(255, 18, 166, 45),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), 
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), 
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                                 ),
                                 child: const Text('로그인하기'),
                               ),
