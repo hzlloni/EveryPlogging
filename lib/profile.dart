@@ -114,6 +114,12 @@ class _ProfileState extends State<Profile> {
               },
               child: Text('확인'),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('취소'),
+            ),
           ],
         );
       },
