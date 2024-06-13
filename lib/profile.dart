@@ -236,6 +236,8 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Color(0xFFCFEBFE),
       appBar: SubAppBar(),
@@ -271,7 +273,9 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
-                SizedBox(width: 130),
+                SizedBox(
+                  width: screenSize.width * 0.25,
+                ),
                 Text(
                   "$mytime 시간",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -279,15 +283,17 @@ class _ProfileState extends State<Profile> {
               ],
             ),
             Divider(
-              height: 20,
+              height: screenSize.height * 0.05,
               thickness: 1,
               indent: 0,
               endIndent: 0,
               color: Color(0xFFA99E9E),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: screenSize.height * 0.0001),
             _buildSectionHeader("신청건 ${attend.length}건"),
-            SizedBox(height: 15),
+            SizedBox(
+              height: screenSize.height * 0.01,
+            ),
             SizedBox(
               height: 140, // Adjust the height as needed
               child: SingleChildScrollView(
@@ -312,7 +318,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: screenSize.height * 0.03),
             _buildSectionHeader("지난기록"),
             SizedBox(height: 10),
             SizedBox(
@@ -325,7 +331,7 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             Divider(
-              height: 18,
+              height: screenSize.height * 0.02,
               thickness: 1,
               indent: 0,
               endIndent: 0,
@@ -334,7 +340,7 @@ class _ProfileState extends State<Profile> {
             //Spacer(),
             _buildNavigationButton1("공지사항", Icons.campaign),
             Divider(
-              height: 3,
+              height: screenSize.height * 0.01,
               thickness: 1,
               indent: 0,
               endIndent: 0,
@@ -342,7 +348,7 @@ class _ProfileState extends State<Profile> {
             ),
             _buildNavigationButton2("로그아웃", Icons.logout, isLogout: true),
             Divider(
-              height: 9,
+              height: screenSize.height * 0.01,
               thickness: 1,
               indent: 0,
               endIndent: 0,
