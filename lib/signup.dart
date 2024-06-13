@@ -273,6 +273,22 @@ class _SignupState extends State<Signup> {
                               });
                             }
 
+                            // '서울대'라는 글자가 포함되어 있는지 확인하고 텍스트 필드에 설정
+                            if (recognizedText.text.contains('서울') ||
+                                recognizedText.text.contains('SEOUL')) {
+                              setState(() {
+                                _schoolController.text = '서울대학교';
+                              });
+                            }
+
+                            // '연세대'라는 글자가 포함되어 있는지 확인하고 텍스트 필드에 설정
+                            if (recognizedText.text.contains('연세') ||
+                                recognizedText.text.contains('YONSEI')) {
+                              setState(() {
+                                _schoolController.text = '연세대학교';
+                              });
+                            }
+
                             // 텍스트 인식기 해제
                             textRecognizer.close();
                           }
