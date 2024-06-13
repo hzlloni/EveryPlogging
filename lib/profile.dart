@@ -247,114 +247,118 @@ class _ProfileState extends State<Profile> {
           print('Selected Index: $index');
         },
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage('assets/profile.png'),
-                ),
-                SizedBox(width: 27),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      school,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: screenSize.width * 0.25,
-                ),
-                Text(
-                  "$mytime 시간",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Divider(
-              height: screenSize.height * 0.05,
-              thickness: 1,
-              indent: 0,
-              endIndent: 0,
-              color: Color(0xFFA99E9E),
-            ),
-            SizedBox(height: screenSize.height * 0.0001),
-            _buildSectionHeader("신청건 ${attend.length}건"),
-            SizedBox(
-              height: screenSize.height * 0.01,
-            ),
-            SizedBox(
-              height: 140, // Adjust the height as needed
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: attend
-                      .map((item) => FutureBuilder<bool>(
-                            future: _isGroupOwner(item),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                return Text('오류 발생');
-                              } else {
-                                bool isOwner = snapshot.data ?? false;
-                                return _buildRequestCard(item, "시작하기", isOwner);
-                              }
-                            },
-                          ))
-                      .toList(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage('assets/profile.png'),
+                  ),
+                  SizedBox(width: 27),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        school,
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: screenSize.width * 0.25,
+                  ),
+                  Text(
+                    "$mytime 시간",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Divider(
+                height: screenSize.height * 0.05,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+                color: Color(0xFFA99E9E),
+              ),
+              SizedBox(height: screenSize.height * 0.0001),
+              _buildSectionHeader("신청건 ${attend.length}건"),
+              SizedBox(
+                height: screenSize.height * 0.01,
+              ),
+              SizedBox(
+                height: 140, // Adjust the height as needed
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: attend
+                        .map((item) => FutureBuilder<bool>(
+                              future: _isGroupOwner(item),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Text('오류 발생');
+                                } else {
+                                  bool isOwner = snapshot.data ?? false;
+                                  return _buildRequestCard(
+                                      item, "시작하기", isOwner);
+                                }
+                              },
+                            ))
+                        .toList(),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: screenSize.height * 0.03),
-            _buildSectionHeader("지난기록"),
-            SizedBox(height: 10),
-            SizedBox(
-              height: 110, // Adjust the height as needed
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: end.map((item) => _buildHistoryCard(item)).toList(),
+              SizedBox(height: screenSize.height * 0.03),
+              _buildSectionHeader("지난기록"),
+              SizedBox(height: 10),
+              SizedBox(
+                height: 110, // Adjust the height as needed
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children:
+                        end.map((item) => _buildHistoryCard(item)).toList(),
+                  ),
                 ),
               ),
-            ),
-            Divider(
-              height: screenSize.height * 0.02,
-              thickness: 1,
-              indent: 0,
-              endIndent: 0,
-              color: Color(0xFFA99E9E),
-            ),
-            //Spacer(),
-            _buildNavigationButton1("공지사항", Icons.campaign),
-            Divider(
-              height: screenSize.height * 0.01,
-              thickness: 1,
-              indent: 0,
-              endIndent: 0,
-              color: Color(0xFFA99E9E),
-            ),
-            _buildNavigationButton2("로그아웃", Icons.logout, isLogout: true),
-            Divider(
-              height: screenSize.height * 0.01,
-              thickness: 1,
-              indent: 0,
-              endIndent: 0,
-              color: Color(0xFFA99E9E),
-            ),
-          ],
+              Divider(
+                height: screenSize.height * 0.02,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+                color: Color(0xFFA99E9E),
+              ),
+              //Spacer(),
+              _buildNavigationButton1("공지사항", Icons.campaign),
+              Divider(
+                height: screenSize.height * 0.01,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+                color: Color(0xFFA99E9E),
+              ),
+              _buildNavigationButton2("로그아웃", Icons.logout, isLogout: true),
+              Divider(
+                height: screenSize.height * 0.01,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+                color: Color(0xFFA99E9E),
+              ),
+            ],
+          ),
         ),
       ),
     );
