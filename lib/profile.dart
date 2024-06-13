@@ -112,7 +112,7 @@ class _ProfileState extends State<Profile> {
                 await _completeGroupActivity(groupId);
                 Navigator.of(context).pop();
               },
-              child: Text('확인'),
+              child: Text('참여완료!'),
             ),
             TextButton(
               onPressed: () {
